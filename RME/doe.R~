@@ -1,0 +1,51 @@
+with = read.table(file= "predictionsWith")
+wo = read.table(file= "predictionsWO")
+lei = 100
+withTest = seq(min(with[,2]), max(with[,2]), len = lei) 
+woTest =  seq(min(wo[,2]), max(wo[,2]), len = lei) 
+
+#with[with[,1] == -1,1] = 0
+#wo[wo[,1] == -1,1] = 0
+
+withTestNumP = withTest
+withTestNumS = withTest
+withTestNumR = withTest
+woTestNumP = woTest
+woTestNumS = woTest
+woTestNumR = woTest
+
+j = 1
+for (i in withTest)
+{
+    withTestNumP[j] = sum((with[,2] >= i) & (with[,1] == 1)) / sum(with[,2] >= i)
+    withTestNumR[j] = sum((with[,2] >= i) & (with[,1] == 1)) / sum(with[,1] >= 0)
+    withTestNumS[j] = sum((with[,2] <= i) & (with[,1] == - 1)) / sum(with[,1] <= 0)
+    j = j + 1
+}
+
+j = 1
+for (i in woTest)
+{
+    woTestNumP[j] = sum((wo[,2] >= i) & (wo[,1]==1)) / sum(wo[,2] >= i)
+    woTestNumR[j] = sum((wo[,2] >= i) & (wo[,1] == 1)) / sum(wo[,1] >= 0)
+    woTestNumS[j] = sum((wo[,2] <= i) & (wo[,1] == -1)) / sum(wo[,1] <= 0)
+    j = j + 1
+}
+
+
+
+
+cx = 1.3
+## Save figure to pdf file
+pdf(file = "./figure22.pdf", height = 4, width = 4)
+par(mfrow = c(1, 1))
+#hist(loansData$Interest.R, breaks = 100, col = 1, xlab = "Interest Rate (%)", ylab = "Frequency", 
+ #   main = "", cex.axis = cx, cex.lab = cx)
+#plot(svd1$u[,1],col=numericActivity,pch=19)
+#plot(woTestNumR, woTestNumP, type="l",lwd=4, col = "blue", xlab = "Recall", ylab = "Precision", cex.axis = cx, cex.lab = cx, xlim=c(0.7,1), ylim=c(0.8,1))
+#lines(withTestNumR, withTestNumP, col = "red", lwd=4,  xlim=c(0.7,1), ylim=c(0.8,1))
+plot(1-woTestNumS, woTestNumR, type="l",lwd=4, col = "blue", xlab = "1 - Specificity", ylab = "Sensitivity", cex.axis = cx, cex.lab = cx, ylim=c(0.7,1), xlim=c(0,0.3))
+lines(1-withTestNumS, withTestNumR, col = "red", lwd=4, ylim=c(0.7,1), xlim=c(0,0.3))
+
+
+dev.off()
